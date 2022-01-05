@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import './transaction.dart';
+import 'package:flutter_complete_guide/models/transaction.dart';
+import 'package:flutter_complete_guide/widgets/new_transaction.dart';
+import 'package:flutter_complete_guide/widgets/transaction_list.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,8 +15,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final List<Transaction> transactions = [
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // String titleInput;
+  final titleController = TextEditingController();
+
+  // String amountInput;
+  final amountController = TextEditingController();
+
+  final List<Transaction> _userTransactions = [
     Transaction(
       title: 'New Shoes',
       amount: 69.99,
@@ -28,66 +38,53 @@ class MyHomePage extends StatelessWidget {
     )
   ];
 
+  void _addNewTransaction(String title, double amount) {
+    final newTransaction = Transaction(title: title, amount: amount.toDouble());
+    setState(() {
+      _userTransactions.add(newTransaction);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (_) {
+          return NewTransaction(_addNewTransaction);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: 30),
-              width: double.infinity,
-              child: Card(
-                color: Colors.blue,
-                child: Text(
-                  'Chart!',
+      appBar: AppBar(
+        title: Text('Flutter App'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () => _startAddNewTransaction(context),
+              icon: Icon(Icons.add))
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+            // mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                width: double.infinity,
+                child: Card(
+                  color: Colors.blue,
+                  child: Text(
+                    'Chart!',
+                  ),
+                  elevation: 5,
                 ),
-                elevation: 5,
               ),
-            ),
-            Column(
-                children: transactions.map((transaction) {
-              return Card(
-                elevation: 2,
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 15,
-                      ),
-                      // decoration:
-                      //     BoxDecoration(border: Border.all(color: Colors.blue)),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        '\$${transaction.amount}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            color: Colors.blue),
-                      ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          transaction.title,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 16),
-                        ),
-                        Text(
-                          DateFormat.yMMMd().format(transaction.date),
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              );
-            }).toList())
-          ]),
+              TransactionList(_userTransactions),
+            ]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
+      ),
     );
   }
 }
