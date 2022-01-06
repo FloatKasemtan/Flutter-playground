@@ -40,6 +40,7 @@ class _NewTransactionState extends State<NewTransaction> {
               decoration: InputDecoration(
                 labelText: 'Title',
               ),
+              style: Theme.of(context).textTheme.bodyText1,
               controller: titleController,
               onSubmitted: (_) => submitData(),
               // onChanged: (value) {
@@ -50,6 +51,7 @@ class _NewTransactionState extends State<NewTransaction> {
               decoration: InputDecoration(
                 labelText: 'Amount',
               ),
+              style: Theme.of(context).textTheme.bodyText1,
               keyboardType: TextInputType.number,
               controller: amountController,
               onSubmitted: (_) => submitData(),
@@ -58,9 +60,13 @@ class _NewTransactionState extends State<NewTransaction> {
               // },
             ),
             TextButton(
+              style: TextButton.styleFrom(),
               child: Text(
                 'Add Transaction',
-                style: TextStyle(color: Theme.of(context).primaryColor),
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
               ),
               onPressed: submitData,
             )
