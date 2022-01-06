@@ -31,7 +31,7 @@ class TransactionList extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
-                        color: Colors.blue),
+                        color: Theme.of(context).primaryColor),
                   ),
                 ),
                 Column(
