@@ -6,31 +6,34 @@ import '../models/transaction.dart';
 class TransactionCard extends StatelessWidget {
   final List<Transaction> transactions;
   final int index;
+  final Function deleteTransaction;
 
-  TransactionCard(this.transactions, this.index);
+  TransactionCard(this.transactions, this.index, this.deleteTransaction);
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
       elevation: 2,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(left: 15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  transactions[index].title,
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                Text(
-                  DateFormat.yMMMd().format(transactions[index].date),
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
-              ],
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(left: 15),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    transactions[index].title,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Text(
+                    DateFormat.yMMMd().format(transactions[index].date),
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                ],
+              ),
             ),
           ),
           Container(
@@ -49,6 +52,11 @@ class TransactionCard extends StatelessWidget {
                   color: Theme.of(context).primaryColor),
             ),
           ),
+          IconButton(
+            onPressed: () => deleteTransaction(transactions[index].id),
+            icon: Icon(Icons.delete),
+            color: Theme.of(context).errorColor,
+          )
         ],
       ),
     );
