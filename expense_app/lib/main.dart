@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/models/transaction.dart';
@@ -105,29 +108,41 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final appBar = AppBar(
-      title: Text('Personal Expenses'),
-      backgroundColor: Theme.of(context).primaryColor,
-      actions: <Widget>[
-        IconButton(
-            onPressed: () => _startAddNewTransaction(context),
-            icon: Icon(Icons.add))
-      ],
-    );
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text('Personal Expenses'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: Icon(CupertinoIcons.add),
+                  onTap: () => _startAddNewTransaction(context),
+                )
+              ],
+            ),
+          )
+        : AppBar(
+            title: Text('Personal Expenses'),
+            backgroundColor: Theme.of(context).primaryColor,
+            actions: <Widget>[
+              IconButton(
+                  onPressed: () => _startAddNewTransaction(context),
+                  icon: Icon(Icons.add))
+            ],
+          );
     final calculatedMediaHeight =
-        MediaQuery.of(context).size.height - /* Original Media Height */
-            MediaQuery.of(context).padding.top - /* Status Bar Height */
+        mediaQuery.size.height - /* Original Media Height */
+            mediaQuery.padding.top - /* Status Bar Height */
             appBar.preferredSize.height; /* Appbar height */
 
     final txListWiddget = Container(
         height: calculatedMediaHeight * .7,
         child: TransactionList(_userTransactions, _deleteTransaction));
 
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
+    final pageBody = SafeArea(
+      child: SingleChildScrollView(
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -139,7 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       'Show Chart',
                       style: Theme.of(context).textTheme.bodyText2,
                     ),
-                    Switch(
+                    Switch.adaptive(
+                        // .adaptive make running the app on different platform ex: ios use ios switch style
                         value: _showChart,
                         onChanged: (val) {
                           setState(() {
@@ -161,11 +177,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     : txListWiddget,
             ]),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        backgroundColor: Theme.of(context).primaryColor,
-        onPressed: () => _startAddNewTransaction(context),
-      ),
     );
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            child: pageBody,
+            navigationBar: appBar,
+          )
+        : Scaffold(
+            appBar: appBar,
+            body: pageBody,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    child: Icon(Icons.add),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    onPressed: () => _startAddNewTransaction(context),
+                  ),
+          );
   }
 }
