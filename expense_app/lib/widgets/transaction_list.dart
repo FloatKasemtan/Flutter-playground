@@ -33,37 +33,40 @@ class TransactionList extends StatelessWidget {
               ],
             );
           })
-        : ListView.builder(
-            itemBuilder: (ctx, index) {
-              return
-                  // Maximillian style
-                  // Card(
-                  //   elevation: 4,
-                  //   child: ListTile(
-                  //     leading: CircleAvatar(
-                  //       backgroundColor: Theme.of(context).primaryColor,
-                  //       radius: 30,
-                  //       child: Padding(
-                  //         padding: const EdgeInsets.all(6),
-                  //         child: FittedBox(
-                  //             child: Text(
-                  //           '\$${transaction[index].amount}',
-                  //           style: TextStyle(
-                  //               fontWeight: FontWeight.bold, color: Colors.white),
-                  //         )),
-                  //       ),
-                  //     ),
-                  //     title: Text(
-                  //       transaction[index].title,
-                  //       style: Theme.of(context).textTheme.bodyText1,
-                  //     ),
-                  //     subtitle: Text(
-                  //         DateFormat.yMMMd().format(transaction[index].date)),
-                  //   ),
-                  // );
-                  TransactionCard(transaction, index, deleteTransaction);
-            },
-            itemCount: transaction.length,
+        : ListView(
+            children: transaction
+                .map((tx) => TransactionCard(
+                      key: ValueKey(tx.id),
+                      transaction: tx,
+                      deleteTransaction: deleteTransaction,
+                    ))
+                .toList(),
+
+            // Maximillian style
+            // Card(
+            //   elevation: 4,
+            //   child: ListTile(
+            //     leading: CircleAvatar(
+            //       backgroundColor: Theme.of(context).primaryColor,
+            //       radius: 30,
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(6),
+            //         child: FittedBox(
+            //             child: Text(
+            //           '\$${transaction[index].amount}',
+            //           style: TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //         )),
+            //       ),
+            //     ),
+            //     title: Text(
+            //       transaction[index].title,
+            //       style: Theme.of(context).textTheme.bodyText1,
+            //     ),
+            //     subtitle: Text(
+            //         DateFormat.yMMMd().format(transaction[index].date)),
+            //   ),
+            // );
           );
   }
 }

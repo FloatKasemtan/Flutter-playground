@@ -27,6 +27,12 @@ class _NewTransactionState extends State<NewTransaction> {
     Navigator.of(context).pop();
   }
 
+  @override
+  void didUpdateWidget(covariant NewTransaction oldWidget) { //Do when update the widget
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
   void _presentDatePicker() {
     showDatePicker(
       context: context,

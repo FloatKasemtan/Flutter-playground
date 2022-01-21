@@ -54,7 +54,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   // String titleInput;
   final titleController = TextEditingController();
 
@@ -73,6 +73,23 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   bool _showChart = false;
+
+  @override // Call first when render the widget
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override // Do when the state of the app close
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+  }
+
+  @override
+  dispose() { // Do when the app closed
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((e) {
@@ -104,6 +121,44 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (_) {
           return NewTransaction(_addNewTransaction);
         });
+  }
+
+  List<Widget> _buildLandscapeContent(
+      double calculatedMediaHeight, Widget txListWiddget) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Show Chart',
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+          Switch.adaptive(
+              // .adaptive make running the app on different platform ex: ios use ios switch style
+              value: _showChart,
+              onChanged: (val) {
+                setState(() {
+                  _showChart = val;
+                });
+              })
+        ],
+      ),
+      _showChart
+          ? Container(
+              height: calculatedMediaHeight * .7,
+              child: Chart(_recentTransactions))
+          : txListWiddget,
+    ];
+  }
+
+  List<Widget> _buildPortraitContent(
+      double calculatedMediaHeight, Widget txListWiddget) {
+    return [
+      Container(
+          height: calculatedMediaHeight * .3,
+          child: Chart(_recentTransactions)),
+      txListWiddget
+    ];
   }
 
   @override
@@ -147,34 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
             // mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               if (isLandscape)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Show Chart',
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                    Switch.adaptive(
-                        // .adaptive make running the app on different platform ex: ios use ios switch style
-                        value: _showChart,
-                        onChanged: (val) {
-                          setState(() {
-                            _showChart = val;
-                          });
-                        })
-                  ],
-                ),
+                ..._buildLandscapeContent(calculatedMediaHeight, txListWiddget),
               if (!isLandscape)
-                Container(
-                    height: calculatedMediaHeight * .3,
-                    child: Chart(_recentTransactions)),
-              if (!isLandscape) txListWiddget,
-              if (isLandscape)
-                _showChart
-                    ? Container(
-                        height: calculatedMediaHeight * .7,
-                        child: Chart(_recentTransactions))
-                    : txListWiddget,
+                ..._buildPortraitContent(calculatedMediaHeight, txListWiddget),
             ]),
       ),
     );
